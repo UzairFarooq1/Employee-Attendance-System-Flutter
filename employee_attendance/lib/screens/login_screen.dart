@@ -82,7 +82,8 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
               height: 60,
               width: double.infinity,
-              child: authServiceProvider.isLoading ? const Center(
+              child: authServiceProvider.isLoading 
+              ? const Center(
                 child : CircularProgressIndicator(),
               )
               

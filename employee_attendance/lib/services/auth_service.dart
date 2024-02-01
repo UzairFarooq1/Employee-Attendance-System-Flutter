@@ -1,9 +1,11 @@
+import 'package:employee_attendance/services/db_service.dart';
 import 'package:employee_attendance/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService extends ChangeNotifier{
   final SupabaseClient _supabase = Supabase.instance.client;
+  final DbService _dbService = DbService();
 
   bool _isLoading = false;
 
@@ -23,10 +25,14 @@ class AuthService extends ChangeNotifier{
       }
       final AuthResponse response = 
           await _supabase.auth.signUp(email: email, password: password);
-      Utils.ShowSnackbar("Successfull Signup! You can now login", context,
+          if(response != null){
+            await _dbService.insertNewUser(email, response.user!.id);
+          Utils.ShowSnackbar("Successfully Registered! You can now login", context,
           color: Colors.green);
-      Navigator.pop(context);
-      setIsLoading  = false;
+          await loginEmployee(email, password, context);
+          Navigator.pop(context);
+          }
+
 
   } catch (e){
       Utils.ShowSnackbar(e.toString(), context, color: Colors.red);
