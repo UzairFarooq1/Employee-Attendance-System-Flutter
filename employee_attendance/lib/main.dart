@@ -1,4 +1,4 @@
-import 'package:employee_attendance/screens/login_screen.dart';
+import 'package:employee_attendance/screens/splash_screen.dart';
 import 'package:employee_attendance/services/auth_service.dart';
 import 'package:employee_attendance/services/db_service.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const LoginScreen()
+        home: const SplashScreen()
       ),
     );
   }
