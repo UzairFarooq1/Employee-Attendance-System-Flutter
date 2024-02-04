@@ -1,4 +1,8 @@
+import 'package:employee_attendance/models/user_model.dart';
+import 'package:employee_attendance/services/db_service.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 
 
@@ -14,25 +18,42 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body : SingleChildScrollView(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
-        child:  Column(
+        child: Column(
           children: [
             Container(
               alignment: Alignment.centerLeft,
-              margin: const EdgeInsets.only(top : 32),
-              child: const Text("Welcome", style: TextStyle(
-                color: Colors.black54,
-                fontSize: 30
+              margin: const EdgeInsets.only(top: 32),
+              child: const Text(
+                "Welcome",
+                style: TextStyle(color: Colors.black54, fontSize: 30),
               ),
-              ),
-
             ),
-            Container(
-              alignment: Alignment.centerLeft,
-              child: const  Text("Employee Name",style: TextStyle(
-                fontSize: 25
-              ),),
+            Consumer<DbService>(
+              builder: (context, dbService, child) {
+                return FutureBuilder(
+                  future: dbService.getUserData(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      UserModel user = snapshot.data!;
+                      return Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          user.name.isNotEmpty
+                              ? user.name
+                              : "#${user.employeeId}",
+                          style: const TextStyle(fontSize: 25),
+                        ),
+                      );
+                    }
+                    return const SizedBox(
+                      width: 60,
+                      child: LinearProgressIndicator(),
+                    );
+                  },
+                );
+              },
             ),
             Container(
               alignment: Alignment.centerLeft,
@@ -92,12 +113,21 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             Container(
               margin: const EdgeInsets.only(top : 25),
               alignment: Alignment.centerLeft,
-              child: Text("02 Feb 2024", style: TextStyle(fontSize: 20),),
+              child: Text(
+                DateFormat("dd MMMM yyyy").format(DateTime.now()), 
+                style: const TextStyle(fontSize: 20),),
             ),
 
-            Container(
-              alignment: Alignment.centerLeft,
-              child: Text("02:02:55 PM", style: TextStyle(fontSize: 15, color: Colors.black54),),
+            StreamBuilder(
+              stream: Stream.periodic(const Duration(seconds: 1)),
+              builder: (context, snapshot) {
+                return Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    DateFormat("hh:mm:ss a").format(DateTime.now()), 
+                    style: const TextStyle(fontSize: 15, color: Colors.black54),),
+                );
+              }
             ),
 
             Container(
