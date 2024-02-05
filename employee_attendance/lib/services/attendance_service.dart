@@ -20,6 +20,17 @@ class AttendanceService extends ChangeNotifier {
     notifyListeners();
   }
 
+  String _attendanceHistoryMonth = 
+      DateFormat('MMMM yyyy').format(DateTime.now());
+
+  String get attendanceHistoryMonth => _attendanceHistoryMonth;
+
+  set attendanceHistoryMonth(String value){
+    _attendanceHistoryMonth = value;
+    notifyListeners();
+  }
+
+
   Future getTodayAttendance () async {
     final List result = await _supabase
     .from(Constants.attendanceTable)
@@ -70,6 +81,19 @@ Future markAttendance(BuildContext context) async {
     Utils.ShowSnackbar("You have already checked out today!", context);
   }
   getTodayAttendance();
+}
+
+Future<List<AttendanceModel>>  getAttendanceHistory() async {
+  final List data = await _supabase
+      .from(Constants.attendanceTable)
+      .select()
+      .eq('employee_id', _supabase.auth.currentUser!.id)
+      .textSearch('date', "'$attendanceHistoryMonth'", config: 'english')
+      .order('created at', ascending: false);
+
+  return data
+      .map((attendance) => AttendanceModel.fromJson(attendance))
+      .toList();
 }
 
 
