@@ -1,4 +1,6 @@
 import 'package:employee_attendance/models/user_model.dart';
+import 'package:employee_attendance/services/attendance_service.dart';
+import 'package:employee_attendance/services/auth_service.dart';
 import 'package:employee_attendance/services/db_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -15,16 +17,36 @@ class AttendanceScreen extends StatefulWidget {
 
 class _AttendanceScreenState extends State<AttendanceScreen> {
   final GlobalKey<SlideActionState> key = GlobalKey<SlideActionState>();
+
+  @override
+  void initState() {
+    Provider.of<AttendanceService>(context, listen: false).getTodayAttendance();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final attendanceService = Provider.of<AttendanceService>(context);
+    final authService = Provider.of<AuthService>(context);
+
     return Scaffold(
+        appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.exit_to_app),
+            onPressed: () {
+              authService.signOut();
+            },
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             Container(
               alignment: Alignment.centerLeft,
-              margin: const EdgeInsets.only(top: 32),
+              margin: const EdgeInsets.only(top: 5),
               child: const Text(
                 "Welcome",
                 style: TextStyle(color: Colors.black54, fontSize: 30),
@@ -87,11 +109,14 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text("Check in", style:  TextStyle(fontSize: 20, color: Colors.black54),),
-                        SizedBox(
+                        const Text("Check in", style:  TextStyle(fontSize: 20, color: Colors.black54),),
+                        const SizedBox(
                           width: 80,
                           child: Divider(),),
-                          Text("9:30", style: TextStyle(fontSize: 25),)
+                          Text(
+                          attendanceService.attendanceModel?.checkIn ?? '--/--', 
+                          style: const TextStyle(
+                            fontSize: 25),)
                       ],)),
 
                     Expanded(
@@ -99,13 +124,18 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text("Check out", style:  TextStyle(fontSize: 20, color: Colors.black54),),
-                        SizedBox(
+                        const Text(
+                          "Check out", 
+                          style:  TextStyle(
+                            fontSize: 20, 
+                            color: Colors.black54),),
+                        const SizedBox(
                           width: 80,
                           child: Divider(),),
                           Text(
-                            "--/--", 
-                            style: TextStyle(fontSize: 25),)
+                            attendanceService.attendanceModel?.checkOut ?? '--/--', 
+                            style: const TextStyle(
+                              fontSize: 25),)
                       ],))
                 ]
               ),
@@ -134,7 +164,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
               margin: const EdgeInsets.only(top : 25),
               child: Builder(builder: (context){
                 return SlideAction(
-                  text: "Slide to check out",
+                  text: attendanceService.attendanceModel?.checkIn == null ? "Slide to check In": "Slide to check Out" ,
                   textStyle: TextStyle(
                     color: Colors.black54,
                     fontSize: 18,
@@ -142,7 +172,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   outerColor: Colors.white,
                   innerColor: Colors.blueGrey,
                   key : key,
-                  onSubmit: (){
+                  onSubmit: () async {
+                    await attendanceService.markAttendance(context);
                     key.currentState!.reset();
                   },
                 );
