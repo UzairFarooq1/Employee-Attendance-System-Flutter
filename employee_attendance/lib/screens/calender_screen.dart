@@ -57,6 +57,70 @@ class _CalenderScreenState extends State<CalenderScreen> {
                     AttendanceModel attendanceData = snapshot.data[index];
                     return Container(
                       margin: const EdgeInsets.only(top: 12, left: 20, right: 20, bottom: 10),
+                      height: 150,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [BoxShadow(
+                          color: Colors.black,
+                          blurRadius: 10,
+                          offset: Offset(2,2)
+                          )
+                        ],
+                        borderRadius: BorderRadius.all(Radius.circular(20))
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(child: Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.blueGrey,
+                              borderRadius: BorderRadius.all(Radius.circular(20)),
+                            ),
+                            child: Center(
+                              child: Text(DateFormat("EE \n dd").format(attendanceData.createdAt),style: const TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold
+                              ),
+                              )),
+                          )),
+                          Expanded(
+                            child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Text("Check In",style: TextStyle(fontSize: 20, color: Colors.black54),),
+                              const SizedBox(width: 80,
+                              child: Divider(),),
+                              Text(attendanceData.checkIn, style: const TextStyle(
+                                fontSize: 25,
+                              ),)
+                            ],
+                          )),
+                                                    Expanded(
+                            child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "Check Out",
+                                style: TextStyle(
+                                  fontSize: 20, 
+                                  color: Colors.black54),),
+                              const SizedBox(width: 80,
+                              child: Divider(),),
+                              Text(attendanceData.checkOut?.toString() ?? '--/--', 
+                              style: const TextStyle(
+                                fontSize: 25,
+                              ),)
+                            ],
+                          )),
+                          const SizedBox(
+                            width: 15,
+                            )
+                        ],
+                      ),
                     );
                   });
               } else {
