@@ -27,19 +27,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   @override
   Widget build(BuildContext context) {
     final attendanceService = Provider.of<AttendanceService>(context);
-    final authService = Provider.of<AuthService>(context);
 
     return Scaffold(
-        appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.exit_to_app),
-            onPressed: () {
-              authService.signOut();
-            },
-          ),
-        ],
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
