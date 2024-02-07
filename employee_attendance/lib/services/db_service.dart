@@ -28,7 +28,7 @@ class DbService extends ChangeNotifier {
       'name': '',
       'email': email,
       'employee_id': generateRandomEmployeeId(),
-      'department': null
+      'department': null,
     });
   }
 
@@ -39,29 +39,36 @@ class DbService extends ChangeNotifier {
         .eq('id', _supabase.auth.currentUser!.id)
         .single();
     userModel = UserModel.fromJson(userData);
-    employeeDepartment == null 
-    ? employeeDepartment = userModel?.department 
-    : null;
+    // Since this function can be called multiple times, then it will reset the department value
+    // That is why we are using condition to assign only at the first time
+    employeeDepartment == null
+        ? employeeDepartment = userModel?.department
+        : null;
     return userModel!;
   }
 
-  Future<void> getAllDepartments() async{
+  Future<void> getAllDepartments() async {
     final List result =
         await _supabase.from(Constants.departmentTable).select();
-      allDepartments = 
-        result.map((department) => 
-        DepartmentModel.fromJson(department))
-        .toList();
-      notifyListeners();  
+    allDepartments = [
+      DepartmentModel(id: 1, title: 'Sales'),
+      DepartmentModel(id: 2, title: 'HR'),
+      DepartmentModel(id: 3, title: 'IT'),
+      DepartmentModel(id: 4, title: 'Marketing'),
+      DepartmentModel(id: 5, title: 'Finance'),
+      DepartmentModel(id: 6, title: 'Operation'),
+    ];
+    notifyListeners();
   }
 
-  Future updateProfile(String name, BuildContext context) async{
+  Future updateProfile(String name, BuildContext context) async {
     await _supabase.from(Constants.employeeTable).update({
-      'name':name,
+      'name': name,
       'department': employeeDepartment,
-  }).eq('id', _supabase.auth.currentUser!.id);
+    }).eq('id', _supabase.auth.currentUser!.id);
 
-  Utils.ShowSnackbar("Profile Updated Successfully", context, color: Colors.greenAccent);
-  notifyListeners();
+    Utils.ShowSnackbar("Profile Updated Successfully", context,
+        color: Colors.green);
+    notifyListeners();
   }
 }
