@@ -35,7 +35,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           children: [
             Container(
               alignment: Alignment.centerLeft,
-              margin: const EdgeInsets.only(top: 5),
+              margin: const EdgeInsets.only(top: 20),
               child: const Text(
                 "Welcome",
                 style: TextStyle(color: Colors.black54, fontSize: 30),
