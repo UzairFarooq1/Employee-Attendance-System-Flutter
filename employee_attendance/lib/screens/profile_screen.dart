@@ -17,7 +17,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final dbService = Provider.of<DbService>(context);
-
+    // Using below conditions because build can be called multiple times
     dbService.allDepartments.isEmpty ? dbService.getAllDepartments() : null;
     nameController.text.isEmpty
         ? nameController.text = dbService.userModel?.name ?? ''
@@ -35,27 +35,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
-                        margin: const EdgeInsets.only(top:20),
+                        margin: const EdgeInsets.only(top: 20),
                         alignment: Alignment.topRight,
                         child: TextButton.icon(
-                          onPressed: (){
-                            Provider.of<AuthService>(context, listen: false)
+                            onPressed: () {
+                              Provider.of<AuthService>(context, listen: false)
                                   .signOut();
-                          },
-                          icon: const Icon(Icons.logout), 
-                          label: const Text("Sign out")),
+                            },
+                            icon: const Icon(Icons.logout),
+                            label: const Text("Sign Out")),
                       ),
                       Container(
                         margin: const EdgeInsets.only(top: 20),
                         height: 100,
                         width: 100,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.blueGrey,
-                        ),
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.redAccent),
                         child: const Center(
-                          child: Icon(Icons.person_outline_sharp,
-                              size: 60, color: Colors.white),
+                          child: Icon(
+                            Icons.person,
+                            size: 50,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                       const SizedBox(
@@ -66,51 +68,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         height: 30,
                       ),
                       TextField(
-                        controller:  nameController,
+                        controller: nameController,
                         decoration: const InputDecoration(
-                          label: Text("Full Name"),
-                          border: OutlineInputBorder()
-                        ),
+                            label: Text("Full name"),
+                            border: OutlineInputBorder()),
                       ),
                       const SizedBox(
                         height: 15,
                       ),
-                      dbService.allDepartments.isEmpty? const LinearProgressIndicator() : SizedBox(
-                        width: double.infinity,
-                        child: DropdownButtonFormField(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(
-
-                            )
-                          ),
-                          value: dbService.employeeDepartment ?? dbService.allDepartments.first.id,
-                          items: dbService.allDepartments.map((DepartmentModel item) {
-                            return DropdownMenuItem(
-                              value: item.id ,
-                              child: Text(item.title, style:  const TextStyle(
-                                fontSize: 18,
-                              ),)
-                            );
-                          }).toList(),
-                          onChanged:(selectedValue){
-                            dbService.employeeDepartment = selectedValue;
-                          }
-                        ),
+                      dbService.allDepartments.isEmpty
+                          ? const LinearProgressIndicator()
+                          : SizedBox(
+                              width: double.infinity,
+                              child: DropdownButtonFormField(
+                                decoration: const InputDecoration(
+                                    border: OutlineInputBorder()),
+                                value: dbService.employeeDepartment ??
+                                    dbService.allDepartments.first.id,
+                                items: dbService.allDepartments
+                                    .map((DepartmentModel item) {
+                                  return DropdownMenuItem(
+                                      value: item.id,
+                                      child: Text(
+                                        item.title,
+                                        style: const TextStyle(fontSize: 20),
+                                      ));
+                                }).toList(),
+                                onChanged: (selectedValue) {
+                                  dbService.employeeDepartment = selectedValue;
+                                },
+                              ),
+                            ),
+                      const SizedBox(
+                        height: 40,
                       ),
-                      const SizedBox(height: 40,),
                       SizedBox(
                         width: 200,
                         height: 50,
-                        child : ElevatedButton(
-                          onPressed: (){
-                            dbService.updateProfile(nameController.text.trim(), context);
+                        child: ElevatedButton(
+                          onPressed: () {
+                            dbService.updateProfile(
+                                nameController.text.trim(), context);
                           },
-                          child: const Text("Update Profile",
-                          style: TextStyle(
-                            fontSize: 20
-                          ),),
-                        )
-                      )
+                          child: const Text(
+                            "Update Profile",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
