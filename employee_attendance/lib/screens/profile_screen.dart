@@ -25,7 +25,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
         body: dbService.userModel == null
             ? const Center(
-                child: CircularProgressIndicator(),
               )
             : Padding(
                 padding: const EdgeInsets.all(20),
