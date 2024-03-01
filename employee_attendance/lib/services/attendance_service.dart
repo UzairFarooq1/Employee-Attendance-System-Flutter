@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:location/location.dart';
 
+
 class AttendanceService extends ChangeNotifier {
   final SupabaseClient _supabase = Supabase.instance.client;
   AttendanceModel? attendanceModel;
@@ -31,6 +32,15 @@ class AttendanceService extends ChangeNotifier {
     _attendanceHistoryMonth = value;
     notifyListeners();
   }
+
+  void resetAttendance() {
+    // Reset your attendance data here
+    attendanceModel = null;
+
+    // Notify listeners to update the UI
+    notifyListeners();
+  }
+
 
   Future getTodayAttendance() async {
     final List result = await _supabase

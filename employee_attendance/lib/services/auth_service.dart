@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+import 'dart:async';
 import 'package:employee_attendance/services/db_service.dart';
 import 'package:employee_attendance/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +9,6 @@ class AuthService extends ChangeNotifier {
   final DbService _dbService = DbService();
 
   bool _isLoading = false;
-
   bool get isLoading => _isLoading;
 
   set setIsLoading(bool value) {
@@ -17,12 +16,27 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future registerEmployee(
+ late StreamController<User?> _authStateController;
+
+  AuthService() {
+    _authStateController = StreamController<User?>();
+    _supabase.auth.onAuthStateChange.listen((authState) {
+      // Access the user information through the session property
+      final user = authState.session?.user;
+      _authStateController.add(user);
+    });
+  }
+
+  Stream<User?> authStateChanges() {
+    return _authStateController.stream;
+  }
+
+  Future<void> registerEmployee(
       String email, String password, BuildContext context) async {
     try {
       setIsLoading = true;
       if (email == "" || password == "") {
-        throw ("All Fields are required");
+        throw Exception("All Fields are required");
       }
       final AuthResponse response =
           await _supabase.auth.signUp(email: email, password: password);
@@ -40,12 +54,12 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future loginEmployee(
+  Future<void> loginEmployee(
       String email, String password, BuildContext context) async {
     try {
       setIsLoading = true;
       if (email == "" || password == "") {
-        throw ("All fields are required");
+        throw Exception("All fields are required");
       }
       final AuthResponse response = await _supabase.auth
           .signInWithPassword(email: email, password: password);
@@ -57,10 +71,15 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future signOut() async {
+  Future<void> signOut() async {
     await _supabase.auth.signOut();
     notifyListeners();
   }
 
   User? get currentUser => _supabase.auth.currentUser;
+
+  void dispose() {
+    _authStateController.close();
+    super.dispose();
+  }
 }

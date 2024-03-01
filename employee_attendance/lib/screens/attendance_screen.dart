@@ -20,7 +20,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   @override
   void initState() {
-    Provider.of<AttendanceService>(context, listen: false).getTodayAttendance();
+  Provider.of<AttendanceService>(context, listen: false).resetAttendance();
+  Provider.of<AttendanceService>(context, listen: false).getTodayAttendance();
+      
     super.initState();
   }
 
